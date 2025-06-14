@@ -1,0 +1,27 @@
+name: Fetch & Save Conversion Data
+
+on:
+  push:
+    paths:
+      - trigger/fetch.txt
+
+jobs:
+  fetch-and-save:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Fetch conversion data
+      run: |
+        curl -s "https://api.hiqmobi.com/api/conversion?api_token=fcvjjbvnxb9x5wtlu7ecgsszivqixj5coyps&page=1&limit=10" > data.json
+        mkdir -p admin/manage
+        mv data.json admin/manage/conversation.json
+
+    - name: Commit & Push
+      run: |
+        git config user.name "auto-action"
+        git config user.email "action@github.com"
+        git add admin/manage/conversation.json
+        git commit -m "Auto update from GitHub Action"
+        git push
